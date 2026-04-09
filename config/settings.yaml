@@ -1,0 +1,109 @@
+# ========================================
+# 思科设备信息收集系统配置文件
+# ========================================
+
+# 全局连接设置
+connection:
+  # 连接超时时间（秒）
+  timeout: 30
+  # 认证超时时间（秒）
+  auth_timeout: 20
+  # 读取超时时间（秒）
+  read_timeout: 60
+  # 最大重试次数
+  max_retries: 3
+  # 重试间隔（秒）
+  retry_delay: 5
+
+# 并发设置
+concurrency:
+  # 最大并发连接数（建议根据网络带宽和设备数量调整）
+  max_workers: 20
+  # 批次大小
+  batch_size: 50
+  # 批次间隔（秒）
+  batch_delay: 2
+
+# SSH 设置
+ssh:
+  # 默认SSH端口
+  port: 22
+  # 允许的密钥类型
+  key_types:
+    - ssh-rsa
+    - ssh-ed25519
+    - ecdsa-sha2-nistp256
+
+# 默认凭据（建议使用环境变量或单独的凭据文件）
+credentials:
+  # 默认用户名（可被设备列表中的配置覆盖）
+  default_username: "${CISCO_USERNAME}"
+  # 默认密码（可被设备列表中的配置覆盖）
+  default_password: "${CISCO_PASSWORD}"
+  # enable密码
+  default_secret: "${CISCO_SECRET}"
+
+# 设备类型映射
+device_types:
+  ios:
+    netmiko_type: "cisco_ios"
+    napalm_driver: "ios"
+    commands:
+      - "show version"
+      - "show inventory"
+      - "show ip interface brief"
+      - "show interfaces status"
+      - "show module"
+  nxos:
+    netmiko_type: "cisco_nxos"
+    napalm_driver: "nxos"
+    commands:
+      - "show version"
+      - "show inventory"
+      - "show ip interface brief vrf all"
+      - "show interface status"
+      - "show module"
+  ios_xe:
+    netmiko_type: "cisco_xe"
+    napalm_driver: "ios"
+    commands:
+      - "show version"
+      - "show inventory"
+      - "show ip interface brief"
+      - "show interfaces status"
+      - "show module"
+
+# 数据存储设置
+storage:
+  # 数据库类型: sqlite, mysql, postgresql
+  db_type: "sqlite"
+  # SQLite数据库文件路径
+  sqlite_path: "./data/devices.db"
+  # 导出目录
+  export_dir: "./exports"
+  # 日志目录
+  log_dir: "./logs"
+
+# 日志设置
+logging:
+  # 日志级别: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: "INFO"
+  # 日志格式
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  # 日志文件最大大小（MB）
+  max_size: 10
+  # 日志文件保留数量
+  backup_count: 5
+
+# 输出格式
+output:
+  # 默认导出格式: csv, excel, json
+  default_format: "excel"
+  # Excel文件设置
+  excel:
+    sheet_name: "设备信息"
+    freeze_panes: true
+  # CSV设置
+  csv:
+    encoding: "utf-8-sig"
+    delimiter: ","

@@ -1,0 +1,126 @@
+# ========================================
+# 设备清单示例文件
+# ========================================
+# 请根据实际设备信息修改此文件
+
+# 支持的设备类型 (device_type):
+#   Cisco: cisco_ios, cisco_xe, cisco_nxos, cisco_xr, cisco_asa
+#          (简写别名: ios, ios_xe, nxos 也支持)
+#   Huawei: huawei, huawei_vrpv8
+#   H3C: hp_comware
+#   Juniper: juniper, juniper_junos
+#   Arista: arista_eos
+#   HP: hp_procurve
+
+# ====================================
+# 凭据配置说明
+# ====================================
+# 您的担心完全正确！不同设备可能有不同的凭据。
+#
+# 方式1：所有设备使用相同凭据（最简单）
+#   - 在 .env 文件中配置 DEVICE_USERNAME 和 DEVICE_PASSWORD
+#   - 所有设备自动使用这个凭据
+#
+# 方式2：部分设备有不同凭据（灵活）
+#   - .env 文件配置默认凭据
+#   - 在下面的设备配置中，为特殊设备单独指定凭据
+#   - 没有单独指定的设备使用 .env 中的默认凭据
+# ====================================
+
+# 设备列表
+devices:
+  # =====================================
+  # 场景1：使用默认凭据（.env 文件）
+  # =====================================
+  - ip: "192.168.1.1"
+    hostname: "CORE-SW-01"
+    device_type: "cisco_ios"
+    role: "L3 Switch"
+    location: "核心机房"
+    # 不配置 username/password，自动使用 .env 中的 DEVICE_USERNAME 和 DEVICE_PASSWORD
+
+  - ip: "192.168.1.2"
+    hostname: "CORE-SW-02"
+    device_type: "cisco_nxos"
+    role: "L3 Switch"
+    location: "核心机房"
+    # 同上，使用默认凭据
+
+  # =====================================
+  # 场景2：某些设备有不同的凭据
+  # =====================================
+  # 示例：老旧设备，仍然使用旧密码
+  - ip: "192.168.2.1"
+    device_type: "ios"
+    role: "switch"
+    location: "楼层1机房"
+    # 单独指定这台设备的凭据（覆盖 .env 默认值）
+    username: "oldadmin"
+    password: "OldPassword123"
+    secret: "OldEnable123"
+
+  # 示例：高安全区域设备，使用不同密码
+  - ip: "10.0.0.1"
+    device_type: "cisco_ios"
+    role: "router"
+    location: "边界防火墙"
+    username: "secadmin"
+    password: "SecurePass456!"
+    secret: "SecureEnable456!"
+
+  # 示例：华为设备，使用不同的默认账号
+  - ip: "192.168.3.1"
+    device_type: "huawei"
+    role: "switch"
+    location: "分支机房"
+    username: "huawei_admin"      # 华为设备的特殊账号
+    password: "Huawei@2024"
+
+  # 示例：测试环境设备，使用简单密码
+  - ip: "192.168.100.1"
+    device_type: "ios"
+    role: "switch"
+    location: "实验室"
+    username: "testuser"
+    password: "test123"            # 测试环境可以用简单密码
+    # 没有 secret，说明这台设备不需要 enable 密码
+
+  # =====================================
+  # 场景3：正常设备，使用默认凭据
+  # =====================================
+  - ip: "192.168.2.2"
+    device_type: "ios"
+    role: "switch"
+    location: "楼层2"
+    # 没有配置凭据，使用 .env 默认值
+
+  - ip: "192.168.2.3"
+    device_type: "ios"
+    role: "switch" 
+    location: "楼层3"
+    # 同上
+
+  # 示例：路由器
+  - ip: "10.0.0.1"
+    device_type: "ios_xe"
+    role: "router"
+    location: "边界"
+
+# 设备组（可选，用于批量管理）
+device_groups:
+  core_switches:
+    description: "核心交换机"
+    devices:
+      - "192.168.1.1"
+      - "192.168.1.2"
+  
+  distribution_switches:
+    description: "汇聚交换机"
+    devices:
+      - "192.168.2.1"
+      - "192.168.2.2"
+  
+  routers:
+    description: "路由器"
+    devices:
+      - "10.0.0.1"
